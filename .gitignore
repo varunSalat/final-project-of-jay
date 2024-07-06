@@ -1,0 +1,6 @@
+
+# Dependency directories
+frontend/node_modules/
+frontend/jspm_packages/
+backend/node_modules/
+backend/jspm_packages/
