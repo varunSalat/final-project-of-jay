@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import { Box, useMediaQuery } from "@mui/material";
 import Navbar from "../navbar";
 import { useSelector } from "react-redux";
@@ -12,7 +12,7 @@ import ChannelCardList from "../channel/ChannelCardList";
 const HomePage = () => {
   const isNonMobileScreens = useMediaQuery("(min-width: 1000px)");
   const { _id, picturePath } = useSelector((state) => state.user);
-  const [isRefresh, setIsRefresh] = React.useState(false)
+  const [isRefresh, setIsRefresh] = React.useState(false);
 
   return (
     <Box>
@@ -39,7 +39,10 @@ const HomePage = () => {
         {isNonMobileScreens && (
           <Box flexBasis="26%">
             <AdvertWidget />
-            <ChannelCardList isRefresh={isRefresh} setIsRefresh={setIsRefresh} />
+            <ChannelCardList
+              isRefresh={isRefresh}
+              setIsRefresh={setIsRefresh}
+            />
           </Box>
         )}
       </Box>

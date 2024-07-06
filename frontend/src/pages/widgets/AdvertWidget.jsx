@@ -15,7 +15,7 @@ const AdvertWidget = () => {
         <Typography color={dark} variant="h5" fontWeight="500">
           Sponsored
         </Typography>
-        <Typography color={medium}>Verma Social</Typography>
+        <Typography color={medium}>Shivam Social</Typography>
       </FlexBetween>
       <img
         width="100%"
@@ -25,11 +25,16 @@ const AdvertWidget = () => {
         style={{ borderRadius: "0.75rem", margin: "0.75rem 0" }}
       />
       <FlexBetween>
-        <Typography color={main}>Verma Social</Typography>
-        <Link href="https://vermasocial.vercel.app/home" target="_blank"><Typography color={medium} style={{ cursor: 'pointer' }}>vermasocial.vercel.app</Typography></Link>
+        <Typography color={main}>Shivam Social</Typography>
+        {/* <Link href="https://vermasocial.vercel.app/home" target="_blank">
+          <Typography color={medium} style={{ cursor: "pointer" }}>
+            vermasocial.vercel.app
+          </Typography>
+        </Link> */}
       </FlexBetween>
       <Typography color={medium} m="0.5rem 0">
-        "Verma" is a social media app where users can share posts, including images and thoughts, and chat with friends.
+        "Shivam" is a social media app where users can share posts, including
+        images and thoughts, and chat with friends.
       </Typography>
     </WidgetWrapper>
   );
