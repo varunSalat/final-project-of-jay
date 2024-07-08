@@ -41,20 +41,6 @@ const io = new Server(httpServer, {
   },
 });
 
-io.on("connection", (socket) => {
-  socket.on("joinRoom", (roomId) => {
-    socket.join(roomId);
-  });
-
-  socket.on("sendMessage", (data) => {
-    io.to(data.channelId).emit("receiveMessage", data);
-  });
-
-  socket.on("sendPersonalMessage", (data) => {
-    io.to(data.conversationId).emit("receivePersonalMessage", data);
-  });
-});
-
 // MIDDLEWARES //
 app.use(express.json());
 app.use(helmet());
