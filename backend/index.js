@@ -9,16 +9,10 @@ import morgan from "morgan";
 import path from "path";
 import { fileURLToPath } from "url";
 
-import { changeProfileImage, register } from "./src/controllers/auth.js";
-import { createPost } from "./src/controllers/posts.js";
+import { register } from "./src/controllers/auth.js";
 import authRoutes from "./src/routes/auth.js";
-import userRoutes from "./src/routes/users.js";
-import communicationRoutes from "./src/routes/communication.js";
-import postRoutes from "./src/routes/posts.js";
-import channelRoutes from "./src/routes/channel.js";
 import { verifyToken } from "./src/middleware/auth.js";
 import { Server } from "socket.io";
-import { createChannel } from "./src/controllers/channel.js";
 import http from "http";
 
 // CONFIGURATIMONGO_ATLAS_DBONS //
@@ -68,21 +62,9 @@ const upload = multer({ storage });
 // ROUTES WITH FILES //
 
 app.post("/auth/register", upload.single("picture"), register);
-app.post("/posts", verifyToken, upload.single("picture"), createPost);
-app.post(
-  "/changeProfileImage",
-  verifyToken,
-  upload.single("picture"),
-  changeProfileImage
-);
-app.post("/channel", verifyToken, upload.single("picture"), createChannel);
 
 // ROUTES //
 app.use("/auth", authRoutes);
-app.use("/users", userRoutes);
-app.use("/posts", postRoutes);
-app.use("/channel", channelRoutes);
-app.use("/communication", communicationRoutes);
 
 // MONGOOSE SETUP //
 const PORT = process.env.PORT || 8000;

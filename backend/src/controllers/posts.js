@@ -1,39 +1,15 @@
 import { decodeToken } from "../middleware/auth.js";
 import Post from "../models/Post.js";
-import User from "../models/User.js";
-
-export const createPost = async (req, res) => {
-  try {
-    const { userId, description, picturePath } = req.body;
-    const user = await User.findById(userId);
-    const newPost = new Post({
-      userId,
-      firstName: user.firstName,
-      lastName: user.lastName,
-      location: user.location,
-      description,
-      userPicturePath: user.picturePath,
-      picturePath,
-      likes: {},
-      comments: [],
-    });
-
-    await newPost.save();
-
-    const post = await Post.find();
-
-    res.status(201).json(post);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
 
 /* READ */
 export const getFeedPosts = async (req, res) => {
   try {
     const posts = await Post.find()
       .populate("comments.userId", "firstName lastName picturePath")
-      .populate("comments.commentReply.userId", "firstName lastName picturePath");
+      .populate(
+        "comments.commentReply.userId",
+        "firstName lastName picturePath"
+      );
     res.status(200).json(posts);
   } catch (error) {
     res.status(404).json({ message: error.message });
@@ -45,7 +21,10 @@ export const getUserPosts = async (req, res) => {
     const { userId } = req.params;
     const posts = await Post.find({ userId })
       .populate("comments.userId", "firstName lastName picturePath")
-      .populate("comments.commentReply.userId", "firstName lastName picturePath");
+      .populate(
+        "comments.commentReply.userId",
+        "firstName lastName picturePath"
+      );
     res.status(200).json(posts);
   } catch (error) {
     res.status(404).json({ message: error.message });
@@ -83,7 +62,7 @@ export const likePost = async (req, res) => {
 export const sendComment = async (req, res) => {
   try {
     const authorizationHeader = req.headers.authorization;
-    const token = authorizationHeader && authorizationHeader.split(" ")[1]
+    const token = authorizationHeader && authorizationHeader.split(" ")[1];
 
     if (!token) {
       throw new Error("Token not found");
@@ -111,7 +90,7 @@ export const sendComment = async (req, res) => {
             likes: [],
           },
         ],
-      })
+      });
 
       if (!updatedComment) {
         throw new Error("Could not update comment");
@@ -121,7 +100,7 @@ export const sendComment = async (req, res) => {
   } catch (error) {
     return res.status(404).json({ message: error.message });
   }
-}
+};
 
 /* REPLY COMMENT */
 export const sendCommentReply = async (req, res) => {
@@ -148,13 +127,15 @@ export const sendCommentReply = async (req, res) => {
       throw new Error("Post not found");
     }
 
-    const filteredComment = post.comments.filter((filter) => filter._id.toString() === commentId.toString());
+    const filteredComment = post.comments.filter(
+      (filter) => filter._id.toString() === commentId.toString()
+    );
 
     const replyObject = {
       comment: commentReply,
       userId: userId,
       likes: [],
-    }
+    };
 
     if (filteredComment.length > 0) {
       filteredComment[0].commentReply.push(replyObject);
@@ -169,7 +150,7 @@ export const sendCommentReply = async (req, res) => {
   } catch (error) {
     return res.status(404).json({ message: error.message });
   }
-}
+};
 
 /* GET COMMENT */
 export const getComments = async (req, res) => {
@@ -178,41 +159,49 @@ export const getComments = async (req, res) => {
     if (!postId) {
       throw new Error("Post Id not found");
     }
-    const comment = await Post.findById(postId).populate("comments.userId", "firstName lastName picturePath")
-      .populate("comments.commentReply.userId", "firstName lastName picturePath").sort({ "comments.timestamps": -1 });
+    const comment = await Post.findById(postId)
+      .populate("comments.userId", "firstName lastName picturePath")
+      .populate(
+        "comments.commentReply.userId",
+        "firstName lastName picturePath"
+      )
+      .sort({ "comments.timestamps": -1 });
 
     if (!comment) {
       throw new Error("post not found");
     }
     const newObject = comment && comment.comments;
     res.status(200).json(newObject);
-
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
-}
+};
 
 // Edit Comment //
 export const editComment = async (req, res) => {
   try {
     const authorizationHeader = req.headers.authorization;
-    const token = authorizationHeader && authorizationHeader.split(" ")[1]
+    const token = authorizationHeader && authorizationHeader.split(" ")[1];
 
     if (!token) {
-      return res.json({ Message: "Token not found." })
+      return res.json({ Message: "Token not found." });
     }
 
     const userDetail = await decodeToken(token);
     const userId = userDetail.id;
     const { postId, commentId, newComment } = req.body;
     if (!postId || !commentId || !newComment) {
-      return res.json({ Message: "Post id, comment id and new comment are not found." })
+      return res.json({
+        Message: "Post id, comment id and new comment are not found.",
+      });
     }
     const post = await Post.findById(postId);
     if (!post) {
-      return res.json({ Message: "Post not found." })
+      return res.json({ Message: "Post not found." });
     }
-    const commentToUpdate = post.comments.find(comment => comment._id.toString() === commentId.toString());
+    const commentToUpdate = post.comments.find(
+      (comment) => comment._id.toString() === commentId.toString()
+    );
     if (commentToUpdate) {
       commentToUpdate.comment = newComment;
       await post.save();
@@ -223,13 +212,13 @@ export const editComment = async (req, res) => {
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
-}
+};
 
 // Edit Reply Comment //
 export const editReplyComment = async (req, res) => {
   try {
     const authorizationHeader = req.headers.authorization;
-    const token = authorizationHeader && authorizationHeader.split(" ")[1]
+    const token = authorizationHeader && authorizationHeader.split(" ")[1];
     if (!token) {
       throw new Error("Token not found");
     }
@@ -237,19 +226,26 @@ export const editReplyComment = async (req, res) => {
     const userId = userDetail.id;
     const { postId, commentId, commentReplyId, newComment } = req.body;
     if (!postId || !commentId || !commentReplyId || !newComment) {
-      return res.json({ Message: "Post id, comment id, comment reply id and new comment are not found." })
+      return res.json({
+        Message:
+          "Post id, comment id, comment reply id and new comment are not found.",
+      });
     }
     const post = await Post.findById(postId);
     if (!post) {
-      return res.json({ Message: "Post not found." })
+      return res.json({ Message: "Post not found." });
     }
-    const commentToUpdate = post.comments.find(comment => comment._id.toString() === commentId.toString());
+    const commentToUpdate = post.comments.find(
+      (comment) => comment._id.toString() === commentId.toString()
+    );
     if (!commentToUpdate) {
-      return res.json({ Message: "Comment not found." })
+      return res.json({ Message: "Comment not found." });
     }
-    const replyCommentUpdate = commentToUpdate.commentReply.find(comment => comment._id.toString() === commentReplyId.toString());
+    const replyCommentUpdate = commentToUpdate.commentReply.find(
+      (comment) => comment._id.toString() === commentReplyId.toString()
+    );
     if (!replyCommentUpdate) {
-      return res.json({ Message: "Comment reply not found." })
+      return res.json({ Message: "Comment reply not found." });
     }
     replyCommentUpdate.comment = newComment;
     const updatedComment = await post.save();
@@ -260,13 +256,13 @@ export const editReplyComment = async (req, res) => {
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
-}
+};
 
 // Delete Comment //
 export const deleteComment = async (req, res) => {
   try {
     const authorizationHeader = req.headers.authorization;
-    const token = authorizationHeader && authorizationHeader.split(" ")[1]
+    const token = authorizationHeader && authorizationHeader.split(" ")[1];
     if (!token) {
       throw new Error("Token not found");
     }
@@ -274,17 +270,21 @@ export const deleteComment = async (req, res) => {
     const userId = userDetail.id;
     const { postId, commentId } = req.body;
     if (!postId || !commentId) {
-      return res.json({ Message: "Post id and comment id are not found." })
+      return res.json({ Message: "Post id and comment id are not found." });
     }
     const post = await Post.findById(postId);
     if (!post) {
-      return res.json({ Message: "Post not found." })
+      return res.json({ Message: "Post not found." });
     }
-    const comment = post.comments.find(comment => comment._id.toString() === commentId.toString());
+    const comment = post.comments.find(
+      (comment) => comment._id.toString() === commentId.toString()
+    );
     if (!comment) {
-      return res.json({ Message: "Comment not found." })
+      return res.json({ Message: "Comment not found." });
     }
-    post.comments = post.comments.filter(comment => comment._id.toString() !== commentId.toString());
+    post.comments = post.comments.filter(
+      (comment) => comment._id.toString() !== commentId.toString()
+    );
     const updatedPost = await post.save();
     if (!updatedPost) {
       return res.json({ Message: "Failed to delete post" });
@@ -293,13 +293,13 @@ export const deleteComment = async (req, res) => {
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
-}
+};
 
 // Delete Reply Comment //
 export const deleteReplyComment = async (req, res) => {
   try {
     const authorizationHeader = req.headers.authorization;
-    const token = authorizationHeader && authorizationHeader.split(" ")[1]
+    const token = authorizationHeader && authorizationHeader.split(" ")[1];
     if (!token) {
       throw new Error("Token not found");
     }
@@ -307,21 +307,29 @@ export const deleteReplyComment = async (req, res) => {
     const userId = userDetail.id;
     const { postId, commentId, commentReplyId } = req.body;
     if (!postId || !commentId || !commentReplyId) {
-      return res.json({ Message: "Post id, comment id and comment reply id are not found." })
+      return res.json({
+        Message: "Post id, comment id and comment reply id are not found.",
+      });
     }
     const post = await Post.findById(postId);
     if (!post) {
       return res.json({ Message: "Post not found." });
     }
-    const comment = post.comments.find(comment => comment._id.toString() === commentId.toString());
+    const comment = post.comments.find(
+      (comment) => comment._id.toString() === commentId.toString()
+    );
     if (!comment) {
       return res.json({ Message: "Comment not found." });
     }
-    const replyComment = comment.commentReply.find(comment => comment._id.toString() === commentReplyId.toString());
+    const replyComment = comment.commentReply.find(
+      (comment) => comment._id.toString() === commentReplyId.toString()
+    );
     if (!replyComment) {
       return res.json({ Message: "Comment reply not found." });
     }
-    comment.commentReply = comment.commentReply.filter(comment => comment._id.toString() !== commentReplyId.toString());
+    comment.commentReply = comment.commentReply.filter(
+      (comment) => comment._id.toString() !== commentReplyId.toString()
+    );
     const updatedComment = await post.save();
     if (!updatedComment) {
       return res.json({ Message: "Failed to delete post" });
@@ -330,4 +338,4 @@ export const deleteReplyComment = async (req, res) => {
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
-}
+};
