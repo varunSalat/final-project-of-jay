@@ -22,7 +22,7 @@ const App = () => {
   initializeSocket();
   const mode = useSelector((state) => state.mode);
   const theme = useMemo(() => createTheme(themeSettings(mode)), [mode]);
-  // const isAuth = Boolean(useSelector((state) => state.token));
+  const isAuth = Boolean(useSelector((state) => state.token));
 
   const [ipAddress, setIpAddress] = useState("");
 
@@ -54,8 +54,6 @@ const App = () => {
   }, []);
 
   console.log("ipAddress", ipAddress);
-
-  const isAuth = true;
 
   const router = createBrowserRouter(
     createRoutesFromElements(
