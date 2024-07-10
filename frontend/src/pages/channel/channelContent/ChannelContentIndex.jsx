@@ -7,7 +7,6 @@ import { useSelector } from "react-redux";
 import ChannelContent from "./ChannelContent";
 import { AiFillMessage } from "react-icons/ai";
 
-
 const ChannelContentIndex = () => {
   const [followedChannelList, setFollowedChannelList] = React.useState();
   const isNonMobileScreens = useMediaQuery("(min-width: 1000px)");
@@ -34,11 +33,19 @@ const ChannelContentIndex = () => {
 
   const handleOpenChannel = (channel) => {
     setChannel(channel);
+    console.log("channel", channel);
     setIsRefresh((prev) => !prev);
   };
 
   return (
-    <Box style={{ display: "flex", flexDirection: "column", gap: "1rem", height: '100vh' }}>
+    <Box
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        gap: "1rem",
+        height: "100vh",
+      }}
+    >
       <Navbar />
       <Box
         style={{
@@ -48,42 +55,57 @@ const ChannelContentIndex = () => {
           height: "89vh",
         }}
       >
-        {(isNonMobileScreens || !channel) && <WidgetWrapper style={{ flex: "1 10%", height: "100%" }}>
-          <ChannelList
-            followedChannelList={followedChannelList}
-            onClick={(channel) => handleOpenChannel(channel)}
-          />
-        </WidgetWrapper>}
-
-        {(channel || isNonMobileScreens) && <WidgetWrapper style={{ flex: "1 50%", height: "100%" }}>
-          {channel ? (
-            <ChannelContent
-              channel={channel}
-              userId={userId}
-              token={token}
-              isRefresh={isRefresh}
-              setIsRefresh={setIsRefresh}
+        {(isNonMobileScreens || !channel) && (
+          <WidgetWrapper style={{ flex: "1 10%", height: "100%" }}>
+            <ChannelList
+              followedChannelList={followedChannelList}
+              onClick={(channel) => handleOpenChannel(channel)}
             />
-          ) : (
-            <Box
-              style={{
-                width: "100%",
-                height: "100%",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              <Box style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
-                <AiFillMessage size={80} />
-                <Typography variant="h5">Welcome to Verma Channel Communittee</Typography>
-                <Typography color="text.secondary">
-                  In this channel, feel free to privately message other users on Verma. It's a great way to have one-on-one conversations without the whole group seeing.
-                </Typography>
+          </WidgetWrapper>
+        )}
+
+        {(channel || isNonMobileScreens) && (
+          <WidgetWrapper style={{ flex: "1 50%", height: "100%" }}>
+            {channel ? (
+              <ChannelContent
+                channel={channel}
+                userId={userId}
+                token={token}
+                isRefresh={isRefresh}
+                setIsRefresh={setIsRefresh}
+              />
+            ) : (
+              <Box
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <Box
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <AiFillMessage size={80} />
+                  <Typography variant="h5">
+                    Welcome to Shivam Channel Communittee
+                  </Typography>
+                  <Typography color="text.secondary">
+                    In this channel, feel free to privately message other users
+                    on Shivam. It's a great way to have one-on-one conversations
+                    without the whole group seeing.
+                  </Typography>
+                </Box>
               </Box>
-            </Box>
-          )}
-        </WidgetWrapper>}
+            )}
+          </WidgetWrapper>
+        )}
       </Box>
     </Box>
   );

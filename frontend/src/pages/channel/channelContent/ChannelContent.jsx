@@ -13,7 +13,7 @@ const ChannelContent = ({ channel, userId, token, setIsRefresh }) => {
   const [attachment, setAttachment] = React.useState(null);
   const [message, setMessage] = React.useState(null);
   const [getMessages, setGetMessages] = React.useState();
-  const isAdmin = channel.channelAdmin.some((filter) => filter === userId);  
+  const isAdmin = channel.channelAdmin.some((filter) => filter === userId);
 
   const scrollbarsRef = useRef(null);
 
